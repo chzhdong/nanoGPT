@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 from models.model import BigramLanguageModel
 
-def txt_to_data(data_path):
-    with open(data_path, 'r', encoding='utf-8') as f:
+def txt_to_data(config):
+    with open(config.data_path, 'r', encoding='utf-8') as f:
         text = f.read()
     chars = sorted(list(set(text)))
     vocab_size = len(chars)
@@ -101,16 +101,8 @@ if __name__ == "__main__":
     for k, v in vars(args).items():
         setattr(config, k, v)
 
-    train_data, val_data, vocab_size, encode, decode = txt_to_data(config.data_path)
-    model = BigramLanguageModel(
-        config.n_embd, 
-        config.n_head, 
-        config.n_layer, 
-        vocab_size, 
-        config.block_size, 
-        config.dropout, 
-        config.device
-    )
+    train_data, val_data, vocab_size, encode, decode = txt_to_data(config)
+    model = BigramLanguageModel(config, vocab_size)
     train(model, train_data, val_data, config)
 
     context = torch.zeros((1, 1), dtype=torch.long, device=config.device)
